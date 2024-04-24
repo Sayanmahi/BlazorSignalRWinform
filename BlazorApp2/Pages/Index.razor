@@ -1,0 +1,93 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using BlazorApp2.Model
+@using BlazorApp2.Service
+@inject IService db
+<PageTitle>Index</PageTitle>
+<h1>Blazor App 2</h1>
+<div>
+    SignalR status : @IsConnected
+    Status Updated On : @updatedOn
+</div>
+<h3>Incoming Message</h3>
+<div>
+@foreach (var str in strlst)
+{
+    <span>@str <br> </span>
+}
+</div>
+<label>Id</label>
+<input @bind="e.Id" />
+<lable>Name</lable>
+<input @bind="e.Name" />
+<label>Phone No.</label>
+<input @bind="e.PhoneNo" />
+<button @onclick="IncrementCount">SUBMIT</button>
+
+
+<br />
+<h3>Incoming Employee</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Phone No.</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in emplist)
+        {
+            <tr>
+                <td>@e.Id</td>
+                <td>@e.Name</td>
+                <td>@e.PhoneNo</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private HubConnection? hubConnection;
+    private Employee e = new Employee();
+    public List<Employee> emplist;
+    public List<string> strlst = new List<string>();
+    public string updatedOn;
+    protected override async Task OnInitializedAsync()
+    {
+        emplist = new List<Employee>();
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl("https://localhost:7031/signalhub")
+        .Build();
+
+        hubConnection.On<Employee>("ReceiveEmployee", (incomingEmployee) =>
+        {
+            InvokeAsync(() =>
+            {
+                emplist.Add(incomingEmployee);
+                updatedOn = DateTime.Now.ToLongTimeString();
+                StateHasChanged();
+            });
+        });
+
+        hubConnection.On<string>("ReceiveMessage", (incomingMessage) =>
+        {
+            InvokeAsync(() =>
+            {
+                strlst.Add(incomingMessage);
+                updatedOn = DateTime.Now.ToLongTimeString();
+                StateHasChanged();
+            });
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+    public bool IsConnected =>
+    hubConnection?.State == HubConnectionState.Connected;
+    private async Task IncrementCount()
+    {
+        await db.AddEmployee(e);
+    }
+}
+

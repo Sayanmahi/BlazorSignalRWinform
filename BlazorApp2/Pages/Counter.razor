@@ -1,0 +1,24 @@
+﻿@page "/counter"
+@using BlazorApp2.Model
+@using BlazorApp2.Service
+@inject IService db
+
+<PageTitle>Counter</PageTitle>
+
+<label>Id</label>
+<input @bind="e.Id" />
+<lable>Name</lable>
+<input @bind="e.Name" />
+<label>Phone No.</label>
+<input @bind="e.PhoneNo" />
+<button @onclick="IncrementCount">SUBMIT</button>
+
+
+@code {
+    private Employee e = new Employee();
+
+    private async Task IncrementCount()
+    {
+        await db.AddEmployee(e);
+    }
+}
