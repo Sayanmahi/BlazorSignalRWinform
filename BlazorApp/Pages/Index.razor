@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorApp.Model
 @using BlazorApp.Service
+@using Newtonsoft.Json
 @inject IService db
 <h1>Blazor App 1</h1>
 <PageTitle>Index</PageTitle>
@@ -23,6 +24,8 @@
 <input @bind="e.Name" />
 <label>Phone No.</label>
 <input @bind="e.PhoneNo" />
+<label>Client Id</label>
+<input @bind="e.clientid" />
 <button @onclick="IncrementCount">SUBMIT</button>
 <h3>Incoming Employee</h3>
 <table class="table">
@@ -51,6 +54,8 @@
     private Employee e = new Employee();
     public List<string> strlst= new List<string>();
     public string updatedOn;
+    public List<string> ids = new List<string>();
+    public string clientid;
     protected override async Task OnInitializedAsync()
     {
         emplist = new List<Employee>();
@@ -77,8 +82,10 @@
                 StateHasChanged();
             });
         });
-
+        
         await hubConnection.StartAsync();
+        //string ff = await db.SeeConnectedUsers();
+        //ids = JsonConvert.DeserializeObject<List<string>>(Convert.ToString(ff));
 
     }
     public bool IsConnected=>

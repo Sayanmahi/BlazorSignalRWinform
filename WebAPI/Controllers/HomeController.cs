@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
             e.Id = emp.Id;
             e.Name = emp.Name;
             e.PhoneNo = emp.PhoneNo;
-            _hubContext.Clients.All.SendAsync("ReceiveEmployee", e);
+            _hubContext.Clients.Client(emp.clientid).SendAsync("ReceiveEmployee", e);
             PushMessage("New Employee Added");
             return Ok("Done");
         }
@@ -34,6 +34,13 @@ namespace WebAPI.Controllers
         {
             _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
             return Ok("Done");
+        }
+        [HttpGet("[action]")]
+        public async Task<ResponseDTO> SeeConnectedUsers()
+        {
+            ResponseDTO d = new ResponseDTO();
+            d.Result=ConnectedUsers.Ids.ToList();
+            return (d);
         }
     }
 }

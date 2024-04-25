@@ -33,5 +33,14 @@ namespace BlazorApp.Service
 
             });
         }
+
+        public async Task<string> SeeConnectedUsers()
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                ApiType = SD.ApiType.GET,
+                Url = "https://localhost:7031/api/Home/SeeConnectedUsers"
+            });
+        }
     }
 }

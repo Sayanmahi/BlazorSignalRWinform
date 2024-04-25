@@ -6,5 +6,6 @@ namespace BlazorApp.Service
     {
         Task AddEmployee(Employee e);
         Task AddMessage(string message);
+        Task<string> SeeConnectedUsers();
     }
 }
